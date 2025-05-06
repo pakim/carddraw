@@ -19,7 +19,7 @@ The simulator is being built with HTML, CSS, and JavaScript (no frameworks yet),
 Current functionality:
 - ✅ Basic card image assets
 - ✅ Initial card dragging functionality
-- ⬜ Random deck generation and draw logic
+- ✅ Random deck generation and draw logic
 - ⬜ Card history and layout management
 - ⬜ Probability/statistics display
 
