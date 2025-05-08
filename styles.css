@@ -3,6 +3,11 @@
   --cardWidth: 200px;
 }
 
+@font-face {
+  font-family: 'pokerfont';
+  src: url('fonts/pokerfont.otf') format('truetype');
+}
+
 * {
   margin: 0;
   box-sizing: border-box;
@@ -10,14 +15,49 @@
 
 body {
   background-color: #35654d;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+}
+
+header button {
+  font-family: "pokerfont", sans-serif;
+  font-size: 40px;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+header button:hover {
+  color: black;
+}
+
+.main {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  margin-top: 70px;
+}
+
+.probability {
+  width: 50%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  margin: 0 50px;
 }
 
 .card-container {
   display: flex;
   flex-direction: column;
   gap: 30px;
+  width: 50%;
   align-items: center;
-  margin-top: 50px;
 }
 
 .landing-zone {
@@ -30,7 +70,7 @@ body {
 .deck-container {
   width: var(--cardWidth);
   height: var(--cardHeight);
-  perspective: 500px; /* Lower value = more dramatic depth */
+  perspective: 500px;
   perspective-origin: center;
 }
 
@@ -40,17 +80,16 @@ body {
   cursor: pointer;
   position: absolute;
   transform-style: preserve-3d;
-  /* transition: transform 0.5s linear; */
+  transition: none;
 }
 
 .card img {
   width: var(--cardWidth);
   height: var(--cardHeight);
-  cursor: pointer;
 }
 
 .card::after {
-  content: ''; /* Necessary to create the pseudo-element */
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -63,7 +102,7 @@ body {
 }
 
 .flipped {
-  animation: draw 0.7s linear forwards;
+  animation: draw 0.7s linear;
   animation-fill-mode: forwards;
 }
 
@@ -77,4 +116,9 @@ body {
   100% {
     transform: translateY(calc(-1 * (var(--cardHeight) + 30px))) translateZ(0) rotateY(0deg);
   }
+}
+
+
+.hidden {
+  display: none;
 }
