@@ -64,6 +64,21 @@ let currentX = 0,
 let activeCard = null;
 let topzIndex = 1;
 
+// Sound effect variables
+const shuffleSound = new Audio("./sounds/card_shuffle.m4a");
+const cardUpSound = new Audio("./sounds/card_up.mp3");
+const cardDownSound = new Audio("./sounds/card_down.mp3");
+const cardDrawSound = new Audio("./sounds/card_draw.mp3");
+
+shuffleSound.volume = 0.5;
+cardUpSound.volume = 0.5;
+cardDownSound.volume = 0.4;
+cardDrawSound.volume = 1;
+shuffleSound.load();
+cardUpSound.load();
+cardDownSound.load();
+cardDrawSound.load();
+
 // Function to shuffle/reset the card deck
 function shuffleDeck() {
   const deck = [...cardList];
@@ -105,6 +120,10 @@ function shuffleDeck() {
         const defaultCard = document.querySelector(".landing-zone");
         const cardHeight = parseInt(window.getComputedStyle(defaultCard).height);
 
+        // Play card draw sound effect
+        cardDrawSound.currentTime = 0;
+        cardDrawSound.play();
+
         // Add the flipped class which has the draw animation
         cardContainer.classList.add("flipped");
 
@@ -122,7 +141,7 @@ function shuffleDeck() {
     );
 
     // Event listener when mouse is clicked down on an active card
-    cardContainer.addEventListener("mousedown", e => {
+    cardContainer.addEventListener("pointerdown", e => {
       // Only works for active cards, not cards that haven't been drawn
       if (!cardContainer.classList.contains("active")) return;
 
@@ -147,6 +166,10 @@ function shuffleDeck() {
       startX = e.clientX - currentX;
       startY = e.clientY - currentY;
 
+      // Play card pick up sound effect
+      cardUpSound.currentTime = 0;
+      cardUpSound.play();
+
       cardContainer.style.cursor = "grabbing";
       cardContainer.style.zIndex = `${topzIndex}`;
     });
@@ -161,24 +184,28 @@ shuffleDeck();
 
 // Event listener for shuffle button click
 const shuffleButton = document.querySelector(".shuffle");
-shuffleButton.addEventListener("click", shuffleDeck);
+shuffleButton.addEventListener("click", () => {
+  shuffleSound.currentTime = 0;
+  shuffleSound.play();
+  shuffleDeck();
+});
 
 // Event listener for show stats button click
 const statsButton = document.querySelector(".show");
 statsButton.addEventListener("click", () => {
   const probability = document.querySelector(".probability");
 
-  if(statsButton.textContent === "Show Stats") {
+  if (statsButton.textContent === "Show Stats") {
     probability.classList.remove("hidden");
     statsButton.textContent = "Hide Stats";
   } else {
     probability.classList.add("hidden");
     statsButton.textContent = "Show Stats";
   }
-})
+});
 
 // Event listener when the mouse moves. Works only when an active card is clicked
-document.addEventListener("mousemove", e => {
+document.addEventListener("pointermove", e => {
   if (!isDragging || !activeCard) return;
   currentX = e.clientX - startX;
   currentY = e.clientY - startY;
@@ -186,8 +213,12 @@ document.addEventListener("mousemove", e => {
 });
 
 // Event listener when the mouse click ends
-document.addEventListener("mouseup", () => {
+document.addEventListener("pointerup", () => {
   if (activeCard) {
+    // Play card down sound effect
+    cardDownSound.currentTime = 0;
+    cardDownSound.play();
+
     activeCard.style.cursor = "pointer";
     isDragging = false;
     activeCard = null;

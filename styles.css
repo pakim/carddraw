@@ -37,6 +37,12 @@ header button:hover {
   color: black;
 }
 
+.options {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
+
 .main {
   display: flex;
   justify-content: center;
@@ -46,7 +52,7 @@ header button:hover {
 }
 
 .probability {
-  width: 50%;
+  width: 30%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.6);
   margin: 0 50px;
@@ -81,6 +87,7 @@ header button:hover {
   position: absolute;
   transform-style: preserve-3d;
   transition: none;
+  user-select: none;
 }
 
 .card img {
