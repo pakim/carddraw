@@ -1,59 +1,4 @@
-const cardList = [
-  "2C",
-  "2D",
-  "2H",
-  "2S",
-  "3C",
-  "3D",
-  "3H",
-  "3S",
-  "4C",
-  "4D",
-  "4H",
-  "4S",
-  "5C",
-  "5D",
-  "5H",
-  "5S",
-  "6C",
-  "6D",
-  "6H",
-  "6S",
-  "7C",
-  "7D",
-  "7H",
-  "7S",
-  "8C",
-  "8D",
-  "8H",
-  "8S",
-  "9C",
-  "9D",
-  "9H",
-  "9S",
-  "TC",
-  "TD",
-  "TH",
-  "TS",
-  "JC",
-  "JD",
-  "JH",
-  "JS",
-  "QC",
-  "QD",
-  "QH",
-  "QS",
-  "KC",
-  "KD",
-  "KH",
-  "KS",
-  "AC",
-  "AD",
-  "AH",
-  "AS",
-  "1J",
-  "2J",
-];
+let jokerEnabled = false;
 
 // Variables for card dragging
 let isDragging = false;
@@ -82,8 +27,51 @@ cardDrawSound.load();
 // Function to shuffle/reset the card deck
 function shuffleDeck() {
   const deck = [...cardList];
-  let index = 0;
+
+  // Check if jokers enabled. If so, add to the deck
+  if (jokerEnabled) {
+    deck.push("ja", "jb");
+  }
+
+  // Call function to create card elements
+  createCardElements(deck);
+}
+
+// Function to create elements and set user/default options
+function setup() {
+  createColorPicker();
+  createBackgroundPicker();
+  shuffleDeck();
+  setCardGlow("white");
+  const colorOption = document.querySelector('[data-color="white"]');
+  colorOption.classList.add("selected");
+  setBackground("default");
+  const bgOption = document.querySelector('[data-bg="default"]');
+  bgOption.classList.add("selected");
+}
+
+// Function to change highlight/glow color
+function setCardGlow(colorName) {
+  const colors = glowPresets[colorName];
+  if (!colors) return;
+  document.body.style.setProperty("--glow-color-1", colors[0]);
+  document.body.style.setProperty("--glow-color-2", colors[1]);
+  document.body.style.setProperty("--glow-color-3", colors[2]);
+  document.body.style.setProperty("--glow-color-4", colors[3]);
+}
+
+// Function to change the background image
+function setBackground(name) {
+  const bg = backgrounds[name];
+  if (!bg) return;
+
+  document.body.style.setProperty("--bg-image", bg.value);
+}
+
+// Function to create card elements for the whole deck
+function createCardElements(deck = cardList) {
   const deckContainer = document.querySelector(".deck-container");
+  let index = 0;
 
   // Animate cards moving back to the deck, then remove card elements
   const cards = document.querySelectorAll(".card");
@@ -180,28 +168,86 @@ function shuffleDeck() {
   }
 }
 
-shuffleDeck();
+// Function to create color options elements in settings
+function createColorPicker() {
+  const glowContainer = document.querySelector(".color-picker");
+  if (!glowContainer) return;
+
+  Object.entries(glowPresets).forEach(([colorName, colorShades]) => {
+    const option = document.createElement("div");
+    option.classList.add("color-option");
+    option.dataset.color = colorName;
+    option.style.setProperty("--color", colorShades[0]);
+    option.title = colorName;
+
+    option.addEventListener("click", () => {
+      document.querySelectorAll(".color-option").forEach(o => o.classList.remove("selected"));
+      option.classList.add("selected");
+      setCardGlow(colorName);
+    });
+
+    glowContainer.appendChild(option);
+  });
+}
+
+// Function to create background option elements in settings
+function createBackgroundPicker() {
+  const bgContainer = document.querySelector(".background-picker");
+  if (!bgContainer) return;
+
+  Object.entries(backgrounds).forEach(([key, bg]) => {
+    const option = document.createElement("div");
+    option.classList.add("bg-option");
+    option.dataset.bg = key;
+    option.title = key;
+
+    option.style.backgroundImage = bg.value;
+
+    option.addEventListener("click", () => {
+      document.querySelectorAll(".bg-option").forEach(o => o.classList.remove("selected"));
+      option.classList.add("selected");
+      setBackground(key);
+    });
+
+    bgContainer.appendChild(option);
+  });
+}
+
+// ==================================================
+// 🎯 EVENT LISTENERS
+// ==================================================
 
 // Event listener for shuffle button click
-const shuffleButton = document.querySelector(".shuffle");
+const shuffleButton = document.querySelector(".shuffle-button");
 shuffleButton.addEventListener("click", () => {
   shuffleSound.currentTime = 0;
   shuffleSound.play();
   shuffleDeck();
 });
 
-// Event listener for show stats button click
-const statsButton = document.querySelector(".show");
-statsButton.addEventListener("click", () => {
-  const probability = document.querySelector(".probability");
+// Event listener for settings button click
+const settingsButton = document.querySelector(".settings-button");
+const settingsPanel = document.querySelector(".settings-panel");
+settingsButton.addEventListener("click", () => {
+  settingsButton.classList.toggle("active");
+  settingsPanel.classList.toggle("show");
+});
 
-  if (statsButton.textContent === "Show Stats") {
-    probability.classList.remove("hidden");
-    statsButton.textContent = "Hide Stats";
+// Event listener for joker toggle in settings
+const jokerToggle = document.querySelector(".toggle-joker");
+jokerToggle.addEventListener("change", () => {
+  if (jokerToggle.checked) {
+    jokerEnabled = true;
   } else {
-    probability.classList.add("hidden");
-    statsButton.textContent = "Show Stats";
+    jokerEnabled = false;
   }
+  shuffleDeck();
+});
+
+const statsToggle = document.querySelector(".toggle-stats");
+const statsContainer = document.querySelector(".stats-container");
+statsToggle.addEventListener("change", () => {
+  statsContainer.classList.toggle("hidden");
 });
 
 // Event listener when the mouse moves. Works only when an active card is clicked
@@ -223,4 +269,9 @@ document.addEventListener("pointerup", () => {
     isDragging = false;
     activeCard = null;
   }
+});
+
+// Event listener to wait for dom to load to start setup
+document.addEventListener("DOMContentLoaded", () => {
+  setup();
 });

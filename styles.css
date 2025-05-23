@@ -4,8 +4,8 @@
 }
 
 @font-face {
-  font-family: 'pokerfont';
-  src: url('fonts/pokerfont.otf') format('truetype');
+  font-family: "pokerfont";
+  src: url("fonts/pokerfont.otf") format("truetype");
 }
 
 * {
@@ -14,48 +14,21 @@
 }
 
 body {
-  background-color: #35654d;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-blend-mode: multiply;
   overflow: hidden;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-}
-
-header button {
-  font-family: "pokerfont", sans-serif;
-  font-size: 40px;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-header button:hover {
-  color: black;
-}
-
-.options {
-  position: fixed;
-  left: 0;
-  bottom: 0;
 }
 
 .main {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   width: 100vw;
   height: 100vh;
-  margin-top: 70px;
-}
-
-.probability {
-  width: 30%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.6);
-  margin: 0 50px;
 }
 
 .card-container {
@@ -69,7 +42,7 @@ header button:hover {
 .landing-zone {
   width: var(--cardWidth);
   height: var(--cardHeight);
-  border: 5px dashed #FFF;
+  border: 5px dashed #fff;
   border-radius: 10px;
 }
 
@@ -80,28 +53,37 @@ header button:hover {
   perspective-origin: center;
 }
 
+/* ==================================================
+   🂠 CARD STYLES
+   ================================================== */
+
 .card {
   width: var(--cardWidth);
   height: var(--cardHeight);
   cursor: pointer;
   position: absolute;
+  border-radius: 10px;
   transform-style: preserve-3d;
-  transition: none;
+  transition: box-shadow 0.2s ease;
   user-select: none;
 }
 
 .card img {
   width: var(--cardWidth);
   height: var(--cardHeight);
+  border-radius: 10px;
+  object-fit: cover;
+  backface-visibility: hidden;
 }
 
 .card::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: var(--cardWidth);
+  height: var(--cardHeight);
+  border-radius: 10px;
   background: url("svg/2B.svg") no-repeat center center;
   background-size: cover;
   transform: rotateY(180deg);
@@ -125,7 +107,280 @@ header button:hover {
   }
 }
 
+/* Cards not in flip animation */
+.card:not(.flipped):hover {
+  border-radius: 10px;
+  background: rgba(100, 200, 255, 0.1);
+  box-shadow: 0 0 12px var(--glow-color-1, rgba(100, 200, 255, 0.6)),
+    0 0 24px var(--glow-color-2, rgba(80, 180, 255, 0.5)),
+    0 0 48px var(--glow-color-3, rgba(60, 160, 255, 0.4)),
+    0 0 64px var(--glow-color-4, rgba(40, 140, 255, 0.3));
+}
 
-.hidden {
+/* ==================================================
+   🔄 SHUFFLE BUTTON
+   ================================================== */
+
+.shuffle-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.shuffle-button {
+  background-color: #c9a34f;
+  color: #2e2a1e;
+  font-size: 1.3rem;
+  padding: 12px 36px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 0 #8b731d, 0 6px 12px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 1px;
+  user-select: none;
+  min-width: 140px;
+}
+
+.shuffle-button:hover {
+  background-color: #e0bb50;
+  color: #1c180e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #8b731d, 0 8px 16px rgba(0, 0, 0, 0.35);
+}
+
+.shuffle-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 #8b731d, 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #f00;
+}
+
+.shuffle-button:hover i {
+  animation: wiggle-btn 0.6s ease-in-out infinite;
+}
+
+@keyframes wiggle-btn {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+/* ==================================================
+   ⚙️ SETTINGS BUTTON
+   ================================================== */
+
+/* Gear Icon Positioning */
+.settings-button {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font-size: 30px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10001;
+  padding: 4px;
+  transition: transform 0.3s ease;
+}
+
+.settings-button:hover {
+  color: var(--glow-color-1);
+}
+
+.settings-button.active {
+  transform: rotate(360deg);
+  color: var(--glow-color-1);
+}
+
+/* ==================================================
+   🪟 SETTINGS PANEL
+   ================================================== */
+
+/* Settings Panel */
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 350px;
+  height: 100%;
+  background: #1f2b23;
+  box-shadow: -6px 0 16px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+/* Active panel */
+.settings-panel.show {
+  transform: translateX(0%);
+}
+
+/* Accent content inside */
+.settings-content {
+  padding: 2rem;
+}
+
+.settings-content h2 {
+  color: #ffca28;
+  margin: 40px 0;
+}
+
+.setting-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #cce8dd;
+  margin: 40px 0 20px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* ==================================================
+   🎨 COLOR / GLOW PICKER
+   ================================================== */
+
+.color-picker {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color);
+  border: 3px transparent;
+  cursor: pointer;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border: 3px solid var(--color);
+  box-shadow: 0 0 8px var(--color);
+}
+
+/* ==================================================
+   🖼️ BACKGROUND PICKER
+   ================================================== */
+
+.background-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bg-option {
+  width: 60px;
+  height: 40px;
+  border-radius: 6px;
+  border: 3px transparent;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.bg-option:hover {
+  transform: scale(1.05);
+}
+
+.bg-option.selected {
+  border: 3px solid var(--glow-color-1, #fff);
+  box-shadow: 0 0 6px var(--glow-color-1, #fff);
+}
+
+/* ==================================================
+   🧲 TOGGLE SWITCHES
+   ================================================== */
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggle .slider {
+  width: 40px;
+  height: 20px;
+  background-color: #444;
+  border-radius: 10px;
+  position: relative;
+  transition: background-color 0.3s;
+  margin-right: 10px;
+}
+
+.toggle .slider::before {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  top: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.toggle input:checked + .slider {
+  background-color: var(--glow-color-1);
+  box-shadow: 0 0 8px var(--glow-color-1), 0 0 16px var(--color);
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-label {
+  color: white;
+  font-size: 1rem;
+}
+
+/* ==================================================
+   📊 STATS PANEL
+   ================================================== */
+
+.stats-container {
+  width: var(--cardWidth);
+  height: var(--cardHeight);
+  border-radius: 10px;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.stats-container.hidden {
   display: none;
 }

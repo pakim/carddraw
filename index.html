@@ -4,24 +4,60 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Random Card</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png" />
     <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
   </head>
   <body>
-    <header>
-      <button class="shuffle">Shuffle</button>
-      <button class="show">Show Stats</button>
-      <button class="options">Options</button>
-    </header>
     <div class="main">
       <div class="card-container">
         <div class="landing-zone"></div>
-        <div class="deck-container"></div>
+        <div class="deck-container" title="Click to draw card">
+          <div class="stats-container hidden"></div>
+        </div>
       </div>
-      <div class="probability hidden">
-        <h2>Stats</h2>
+      <div class="shuffle-container">
+        <button class="shuffle-button" title="Shuffle"><i class="fa-solid fa-shuffle"></i></button>
       </div>
     </div>
-    <div class="options-modal"></div>
+
+    <!-- Gear Icon Button -->
+    <button class="settings-button" title="Settings" aria-label="Settings">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel">
+      <div class="settings-content">
+        <h2>Settings</h2>
+
+        <div class="toggle-wrapper">
+          <label class="toggle">
+            <input type="checkbox" class="toggle-joker" />
+            <span class="slider"></span>
+            <span class="toggle-label">Include Jokers</span>
+          </label>
+        </div>
+
+        <div class="toggle-wrapper">
+          <label class="toggle">
+            <input type="checkbox" class="toggle-stats" />
+            <span class="slider"></span>
+            <span class="toggle-label">Show Probabilities</span>
+          </label>
+        </div>
+       
+        <label class="setting-label">Highlight Color</label>
+        <div class="color-picker"></div>
+
+        <label class="setting-label">Background</label>
+        <div class="background-picker"></div>
+      </div>
+    </div>
+    <script src="globals.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

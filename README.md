@@ -9,6 +9,8 @@ This project simulates drawing cards from a shuffled deck. Cards are drawn one a
 - Drag and move drawn cards around the screen
 - See probability statistics for upcoming cards
 - Reset and reshuffle the deck
+- Change card highlight color
+- Change background image
 
 The simulator is being built with HTML, CSS, and JavaScript (no frameworks yet), focusing on interactivity and visual feedback.
 
@@ -20,12 +22,20 @@ Current functionality:
 - ✅ Basic card image assets
 - ✅ Initial card dragging functionality
 - ✅ Random deck generation and draw logic
-- ⬜ Card history and layout management
+- ✅ Shuffle button
+- ✅ Basic card drawing and flipping animations
+- ✅ Card highlight on hover
+- ✅ Settings panel
+- ✅ Switch to add jokers to the deck
+- ✅ Switch to add probability display
+- ✅ Allow user to change highlight color
+- ✅ Allow user to change background image
+- ⬜ Allow user to change card back image (limited)
 - ⬜ Probability/statistics display
+- ⬜ Advanced card flipping animations (if possible)
 
 ## 🖼️ Preview
 
 Not available yet – coming soon!
 
-## 🗂️ Structure
 
