@@ -96,38 +96,38 @@ const backgrounds = {
   default: {
     type: "gradient",
     value: `linear-gradient(rgba(53, 101, 77, 0.9), rgba(53, 101, 77, 0.9)),
-            url("/images/default.jpg")`,
+            url("./images/default.jpg")`,
   },
   green_1: {
     type: "image",
-    value: 'url("/images/background_green_1.jpg")',
+    value: 'url("./images/background_green_1.jpg")',
   },
   green_2: {
     type: "image",
-    value: 'url("/images/background_green_2.jpg")',
+    value: 'url("./images/background_green_2.jpg")',
   },
   green_3: {
     type: "image",
-    value: 'url("/images/background_green_3.jpg")',
+    value: 'url("./images/background_green_3.jpg")',
   },
   blue_1: {
     type: "image",
-    value: 'url("/images/background_blue_1.jpg")',
+    value: 'url("./images/background_blue_1.jpg")',
   },
   blue_2: {
     type: "image",
-    value: 'url("/images/background_blue_2.jpg")',
+    value: 'url("./images/background_blue_2.jpg")',
   },
   purple_1: {
     type: "image",
-    value: 'url("/images/background_purple_1.jpg")',
+    value: 'url("./images/background_purple_1.jpg")',
   },
   red_1: {
     type: "image",
-    value: 'url("/images/background_red_1.jpg")',
+    value: 'url("./images/background_red_1.jpg")',
   },
   red_2: {
     type: "image",
-    value: 'url("/images/background_red_2.jpg")',
+    value: 'url("./images/background_red_2.jpg")',
   },
 };

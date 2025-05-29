@@ -36,6 +36,6 @@ Current functionality:
 
 ## 🖼️ Preview
 
-Not available yet – coming soon!
+[https://pakim.github.io/cardsim/](https://pakim.github.io/cardsim/)
 
 
