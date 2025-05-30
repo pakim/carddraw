@@ -1,4 +1,5 @@
 let jokerEnabled = false;
+let deckNumberCount = {};
 
 // Variables for card dragging
 let isDragging = false;
@@ -27,11 +28,20 @@ cardDrawSound.load();
 // Function to shuffle/reset the card deck
 function shuffleDeck() {
   const deck = [...cardList];
+  deckNumberCount = { ...deckTemplate };
+  topzIndex = 1;
 
   // Check if jokers enabled. If so, add to the deck
   if (jokerEnabled) {
     deck.push("ja", "jb");
+    deckNumberCount["red"]++;
+    deckNumberCount["black"]++;
+    deckNumberCount["joker"] += 2;
+    deckNumberCount["total"] += 2;
   }
+
+  // Call function to recalculate probabilities
+  calculateStats();
 
   // Call function to create card elements
   createCardElements(deck);
@@ -94,6 +104,10 @@ function createCardElements(deck = cardList) {
     cardContainer.style.zIndex = `${deck.length + 1000}`;
     cardContainer.style.transform = "rotateY(180deg)";
 
+    // Add card name/suit data (first character is name, second character is suit)
+    cardContainer.dataset.card = deck[index][0];
+    cardContainer.dataset.suit = deck[index][1];
+
     // Create card img element
     const cardImg = document.createElement("img");
     cardImg.src = `svg/${deck[index]}.svg`;
@@ -114,6 +128,10 @@ function createCardElements(deck = cardList) {
 
         // Add the flipped class which has the draw animation
         cardContainer.classList.add("flipped");
+
+        // Adjust deck numbers and recalculate probabilities
+        adjustDeckNumbers(cardContainer);
+        calculateStats();
 
         // Add eventlistener to change z index of card once animation ends
         cardContainer.addEventListener("animationend", () => {
@@ -195,14 +213,17 @@ function createBackgroundPicker() {
   const bgContainer = document.querySelector(".background-picker");
   if (!bgContainer) return;
 
+  // Create div elements for the background picker in settings
   Object.entries(backgrounds).forEach(([key, bg]) => {
     const option = document.createElement("div");
     option.classList.add("bg-option");
     option.dataset.bg = key;
     option.title = key;
 
+    // Set background image url
     option.style.backgroundImage = bg.value;
 
+    // Event listener to highlight the background option clicked and change background
     option.addEventListener("click", () => {
       document.querySelectorAll(".bg-option").forEach(o => o.classList.remove("selected"));
       option.classList.add("selected");
@@ -211,6 +232,59 @@ function createBackgroundPicker() {
 
     bgContainer.appendChild(option);
   });
+}
+
+// Function to calculate the probabilities of the next card.
+function calculateStats() {
+  const probElements = document.querySelectorAll(".probability-item");
+
+  probElements.forEach(element => {
+    const span = element.querySelector("span");
+    const type = element.dataset.type;
+
+    // Calculate percentage
+    let probability = (deckNumberCount[type] / deckNumberCount["total"]) * 100;
+
+    // Check if number of cards in the deck is 0. If so set probability to 0 to prevent NaN.
+    if(deckNumberCount["total"] === 0) {
+      probability = 0;
+    }
+
+    // Set span element text to the percentage. Limit to one decimal place. Remove decimal if 0.
+    span.textContent = `${
+      probability % 1 === 0 ? probability.toFixed(0) : probability.toFixed(1)
+    }%`;
+  });
+}
+
+// Function to adjust the number of card types available. (Helps with probability)
+function adjustDeckNumbers(card) {
+  const cardType = card.dataset.card;
+  const cardSuit = card.dataset.suit;
+
+  // Subtract 1 from the card types (2-10, jack, queen, etc)
+  // Check for joker cards
+  if (cardType === "j") {
+    deckNumberCount["joker"]--;
+  } else {
+    deckNumberCount[cardType]--;
+  }
+
+  // Subtract 1 from the card suits (diamond, heart, spade, club)
+  // Check for joker cards
+  if (cardSuit !== "a" && cardSuit !== "b") {
+    deckNumberCount[cardSuit]--;
+  }
+
+  // Subtract 1 from card colors (red, black)
+  if (cardSuit === "D" || cardSuit === "H" || cardSuit === "a") {
+    deckNumberCount["red"]--;
+  } else {
+    deckNumberCount["black"]--;
+  }
+
+  // Subtract 1 from the total
+  deckNumberCount["total"]--;
 }
 
 // ==================================================

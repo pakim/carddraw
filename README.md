@@ -31,8 +31,9 @@ Current functionality:
 - ✅ Allow user to change highlight color
 - ✅ Allow user to change background image
 - ⬜ Allow user to change card back image (limited)
-- ⬜ Probability/statistics display
+- ✅ Probability/statistics display
 - ⬜ Advanced card flipping animations (if possible)
+- ⬜ Use local storage to save setting options
 
 ## 🖼️ Preview
 

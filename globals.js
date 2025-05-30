@@ -131,3 +131,27 @@ const backgrounds = {
     value: 'url("./images/background_red_2.jpg")',
   },
 };
+
+const deckTemplate = {
+  2: 4,
+  3: 4,
+  4: 4,
+  5: 4,
+  6: 4,
+  7: 4,
+  8: 4,
+  9: 4,
+  T: 4,
+  J: 4,
+  Q: 4,
+  K: 4,
+  A: 4,
+  red: 26,
+  black: 26,
+  H: 13,
+  D: 13,
+  S: 13,
+  C: 13,
+  joker: 0,
+  total: 52,
+};
