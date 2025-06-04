@@ -3,14 +3,11 @@
   --cardWidth: 200px;
 }
 
-@font-face {
-  font-family: "pokerfont";
-  src: url("fonts/pokerfont.otf") format("truetype");
-}
-
 * {
   margin: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -53,9 +50,9 @@ body {
   perspective-origin: center;
 }
 
-/* ==================================================
+/* =========================================================================
    🂠 CARD STYLES
-   ================================================== */
+   ========================================================================= */
 
 .card {
   width: var(--cardWidth);
@@ -84,7 +81,7 @@ body {
   width: var(--cardWidth);
   height: var(--cardHeight);
   border-radius: 10px;
-  background: url("svg/2B.svg") no-repeat center center;
+  background: var(--back-design) no-repeat center center;
   background-size: cover;
   transform: rotateY(180deg);
   backface-visibility: hidden;
@@ -117,14 +114,15 @@ body {
     0 0 64px var(--glow-color-4, rgba(40, 140, 255, 0.3));
 }
 
-/* ==================================================
+/* =========================================================================
    🔄 SHUFFLE BUTTON
-   ================================================== */
+   ========================================================================= */
 
 .shuffle-container {
   display: flex;
   justify-content: center;
   margin-top: 30px;
+  user-select: none;
 }
 
 .shuffle-button {
@@ -141,10 +139,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   letter-spacing: 1px;
   user-select: none;
   min-width: 140px;
+  z-index: 1000;
 }
 
 .shuffle-button:hover {
@@ -180,9 +178,9 @@ body {
   }
 }
 
-/* ==================================================
+/* =========================================================================
    ⚙️ SETTINGS BUTTON
-   ================================================== */
+   ========================================================================= */
 
 /* Gear Icon Positioning */
 .settings-button {
@@ -193,7 +191,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 10001;
+  z-index: 1005;
   padding: 4px;
   transition: transform 0.3s ease;
 }
@@ -207,9 +205,9 @@ body {
   color: var(--glow-color-1);
 }
 
-/* ==================================================
+/* =========================================================================
    🪟 SETTINGS PANEL
-   ================================================== */
+   ========================================================================= */
 
 /* Settings Panel */
 .settings-panel {
@@ -251,9 +249,9 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-/* ==================================================
+/* =========================================================================
    🎨 COLOR / GLOW PICKER
-   ================================================== */
+   ========================================================================= */
 
 .color-picker {
   display: flex;
@@ -280,9 +278,9 @@ body {
   box-shadow: 0 0 8px var(--color);
 }
 
-/* ==================================================
+/* =========================================================================
    🖼️ BACKGROUND PICKER
-   ================================================== */
+   ========================================================================= */
 
 .background-picker {
   display: flex;
@@ -297,6 +295,7 @@ body {
   border: 3px transparent;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   cursor: pointer;
   transition: border 0.2s ease, transform 0.2s ease;
 }
@@ -310,9 +309,40 @@ body {
   box-shadow: 0 0 6px var(--glow-color-1, #fff);
 }
 
-/* ==================================================
+/* =========================================================================
+   🖼️ BACK DESIGN PICKER
+   ========================================================================= */
+
+.back-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.back-option {
+  width: 43px;
+  height: 60px;
+  border-radius: 6px;
+  border: 3px transparent;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.back-option:hover {
+  transform: scale(1.05);
+}
+
+.back-option.selected {
+  border: 3px solid var(--glow-color-1, #fff);
+  box-shadow: 0 0 6px var(--glow-color-1, #fff);
+}
+
+/* =========================================================================
    🧲 TOGGLE SWITCHES
-   ================================================== */
+   ========================================================================= */
 
 .toggle-wrapper {
   display: flex;
@@ -367,9 +397,9 @@ body {
   font-size: 1rem;
 }
 
-/* ==================================================
+/* =========================================================================
    📊 STATS PANEL
-   ================================================== */
+   ========================================================================= */
 
 .stats-container {
   width: var(--cardWidth);
@@ -385,9 +415,9 @@ body {
   display: none;
 }
 
-/* ==================================================
+/* =========================================================================
    📊 STATS PANEL – PROBABILITIES
-   ================================================== */
+   ========================================================================= */
 
 .probability-panel {
   width: 100%;

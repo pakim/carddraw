@@ -1,64 +1,6 @@
-let jokerEnabled = false;
-let deckNumberCount = {};
-
-// Variables for card dragging
-let isDragging = false;
-let startX = 0,
-  startY = 0;
-let currentX = 0,
-  currentY = 0;
-let activeCard = null;
-let topzIndex = 1;
-
-// Sound effect variables
-const shuffleSound = new Audio("./sounds/card_shuffle.m4a");
-const cardUpSound = new Audio("./sounds/card_up.mp3");
-const cardDownSound = new Audio("./sounds/card_down.mp3");
-const cardDrawSound = new Audio("./sounds/card_draw.mp3");
-
-shuffleSound.volume = 0.5;
-cardUpSound.volume = 0.5;
-cardDownSound.volume = 0.4;
-cardDrawSound.volume = 1;
-shuffleSound.load();
-cardUpSound.load();
-cardDownSound.load();
-cardDrawSound.load();
-
-// Function to shuffle/reset the card deck
-function shuffleDeck() {
-  const deck = [...cardList];
-  deckNumberCount = { ...deckTemplate };
-  topzIndex = 1;
-
-  // Check if jokers enabled. If so, add to the deck
-  if (jokerEnabled) {
-    deck.push("ja", "jb");
-    deckNumberCount["red"]++;
-    deckNumberCount["black"]++;
-    deckNumberCount["joker"] += 2;
-    deckNumberCount["total"] += 2;
-  }
-
-  // Call function to recalculate probabilities
-  calculateStats();
-
-  // Call function to create card elements
-  createCardElements(deck);
-}
-
-// Function to create elements and set user/default options
-function setup() {
-  createColorPicker();
-  createBackgroundPicker();
-  shuffleDeck();
-  setCardGlow("white");
-  const colorOption = document.querySelector('[data-color="white"]');
-  colorOption.classList.add("selected");
-  setBackground("default");
-  const bgOption = document.querySelector('[data-bg="default"]');
-  bgOption.classList.add("selected");
-}
+// ============================================================================
+// 🎨 DESIGN / UI FUNCTIONS
+// ============================================================================
 
 // Function to change highlight/glow color
 function setCardGlow(colorName) {
@@ -76,6 +18,14 @@ function setBackground(name) {
   if (!bg) return;
 
   document.body.style.setProperty("--bg-image", bg.value);
+}
+
+// Function to change the card back design
+function setBackDesign(name) {
+  const backDesign = cardBackDesigns[name];
+  if (!backDesign) return;
+
+  document.body.style.setProperty("--back-design", backDesign.value);
 }
 
 // Function to create card elements for the whole deck
@@ -113,72 +63,10 @@ function createCardElements(deck = cardList) {
     cardImg.src = `svg/${deck[index]}.svg`;
 
     // Event listener when card in the deck is clicked. Occurs when the card is at the top of the deck
-    cardContainer.addEventListener(
-      "click",
-      e => {
-        e.preventDefault();
-
-        // Retrieve the current height of a card
-        const defaultCard = document.querySelector(".landing-zone");
-        const cardHeight = parseInt(window.getComputedStyle(defaultCard).height);
-
-        // Play card draw sound effect
-        cardDrawSound.currentTime = 0;
-        cardDrawSound.play();
-
-        // Add the flipped class which has the draw animation
-        cardContainer.classList.add("flipped");
-
-        // Adjust deck numbers and recalculate probabilities
-        adjustDeckNumbers(cardContainer);
-        calculateStats();
-
-        // Add eventlistener to change z index of card once animation ends
-        cardContainer.addEventListener("animationend", () => {
-          cardContainer.style.zIndex = `${topzIndex}`;
-
-          // Add card translation to the transform property so position stays after animation
-          cardContainer.style.transform = `translateY(-${cardHeight + 30}px)`;
-          cardContainer.classList.remove("flipped");
-          cardContainer.classList.add("active");
-        });
-      },
-      { once: true }
-    );
+    cardContainer.addEventListener("click", e => drawCard(e, cardContainer), { once: true });
 
     // Event listener when mouse is clicked down on an active card
-    cardContainer.addEventListener("pointerdown", e => {
-      // Only works for active cards, not cards that haven't been drawn
-      if (!cardContainer.classList.contains("active")) return;
-
-      e.preventDefault();
-      isDragging = true;
-      activeCard = cardContainer;
-      ++topzIndex;
-
-      // Compute offset relative to current transform
-      const transform = window.getComputedStyle(cardContainer).transform;
-      if (transform !== "none") {
-        const match = transform.match(/matrix\((.+)\)/);
-        if (match) {
-          const values = match[1].split(", ");
-          currentX = parseFloat(values[4]);
-          currentY = parseFloat(values[5]);
-        }
-      } else {
-        currentX = currentY = 0;
-      }
-
-      startX = e.clientX - currentX;
-      startY = e.clientY - currentY;
-
-      // Play card pick up sound effect
-      cardUpSound.currentTime = 0;
-      cardUpSound.play();
-
-      cardContainer.style.cursor = "grabbing";
-      cardContainer.style.zIndex = `${topzIndex}`;
-    });
+    cardContainer.addEventListener("pointerdown", e => onDown(e, cardContainer));
 
     cardContainer.appendChild(cardImg);
     deckContainer.appendChild(cardContainer);
@@ -234,6 +122,149 @@ function createBackgroundPicker() {
   });
 }
 
+// Function to create back design option elements in settings
+function createBackDesignPicker() {
+  const backContainer = document.querySelector(".back-picker");
+  if (!backContainer) return;
+
+  // Create div elements for the back picker in settings
+  Object.entries(cardBackDesigns).forEach(([key, design]) => {
+    const option = document.createElement("div");
+    option.classList.add("back-option");
+    option.dataset.back = key;
+    option.title = key;
+
+    // Set back design image url
+    option.style.backgroundImage = design.value;
+
+    // Event listener to highlight the back design option clicked and change the back design
+    option.addEventListener("click", () => {
+      document.querySelectorAll(".back-option").forEach(o => o.classList.remove("selected"));
+      option.classList.add("selected");
+      setBackDesign(key);
+    });
+
+    backContainer.appendChild(option);
+  });
+}
+
+// ============================================================================
+// 🎴 CARD DRAGGING FUNCTIONS
+// ============================================================================
+
+// Function that controls what happens when user's pointer/finger lands on an active card
+// Start of dragging motion
+function onDown(e, cardContainer) {
+  // Only works for active cards, not cards that haven't been drawn
+  if (!cardContainer.classList.contains("active")) return;
+  e.preventDefault();
+
+  isDragging = true;
+  activeCard = cardContainer;
+  ++topzIndex;
+
+  // Compute offset relative to current transform
+  const transform = window.getComputedStyle(cardContainer).transform;
+  if (transform !== "none") {
+    const match = transform.match(/matrix\((.+)\)/);
+    if (match) {
+      const values = match[1].split(", ");
+      currentX = parseFloat(values[4]);
+      currentY = parseFloat(values[5]);
+    }
+  } else {
+    currentX = currentY = 0;
+  }
+
+  startX = e.clientX - currentX;
+  startY = e.clientY - currentY;
+
+  // Play card pick up sound effect
+  cardUpSound.currentTime = 0;
+  cardUpSound.play();
+
+  cardContainer.style.cursor = "grabbing";
+  cardContainer.style.zIndex = `${topzIndex}`;
+}
+
+// Function that moves the card while the user's pointer/finger moves across the screen
+function onMove(e) {
+  e.preventDefault();
+
+  if (!isDragging || !activeCard) return;
+  currentX = e.clientX - startX;
+  currentY = e.clientY - startY;
+  activeCard.style.transform = `translate(${currentX}px, ${currentY}px)`;
+}
+
+// Function that puts down the card when the user's pointer/finger lifts off the card
+function onUp(e) {
+  if (activeCard) {
+    // Play card down sound effect
+    cardDownSound.currentTime = 0;
+    cardDownSound.play();
+
+    activeCard.style.cursor = "pointer";
+    isDragging = false;
+    activeCard = null;
+  }
+}
+
+// ============================================================================
+// 📦 UTILITY FUNCTIONS
+// ============================================================================
+
+// Function to shuffle/reset the card deck
+function shuffleDeck() {
+  const deck = [...cardList];
+  deckNumberCount = { ...deckTemplate };
+  topzIndex = 1;
+
+  // Check if jokers enabled. If so, add to the deck
+  if (jokerEnabled) {
+    deck.push("ja", "jb");
+    deckNumberCount["red"]++;
+    deckNumberCount["black"]++;
+    deckNumberCount["joker"] += 2;
+    deckNumberCount["total"] += 2;
+  }
+
+  // Call function to recalculate probabilities
+  calculateStats();
+
+  // Call function to create card elements
+  createCardElements(deck);
+}
+
+function drawCard(e, cardContainer) {
+  e.preventDefault();
+
+  // Retrieve the current height of a card
+  const defaultCard = document.querySelector(".landing-zone");
+  const cardHeight = parseInt(window.getComputedStyle(defaultCard).height);
+
+  // Play card draw sound effect
+  cardDrawSound.currentTime = 0;
+  cardDrawSound.play();
+
+  // Add the flipped class which has the draw animation
+  cardContainer.classList.add("flipped");
+
+  // Adjust deck numbers and recalculate probabilities
+  adjustDeckNumbers(cardContainer);
+  calculateStats();
+
+  // Add eventlistener to change z index of card once animation ends
+  cardContainer.addEventListener("animationend", () => {
+    cardContainer.style.zIndex = `${topzIndex}`;
+
+    // Add card translation to the transform property so position stays after animation
+    cardContainer.style.transform = `translateY(-${cardHeight + 30}px)`;
+    cardContainer.classList.remove("flipped");
+    cardContainer.classList.add("active");
+  });
+}
+
 // Function to calculate the probabilities of the next card.
 function calculateStats() {
   const probElements = document.querySelectorAll(".probability-item");
@@ -246,7 +277,7 @@ function calculateStats() {
     let probability = (deckNumberCount[type] / deckNumberCount["total"]) * 100;
 
     // Check if number of cards in the deck is 0. If so set probability to 0 to prevent NaN.
-    if(deckNumberCount["total"] === 0) {
+    if (deckNumberCount["total"] === 0) {
       probability = 0;
     }
 
@@ -287,9 +318,47 @@ function adjustDeckNumbers(card) {
   deckNumberCount["total"]--;
 }
 
-// ==================================================
+function audioSetup() {
+  shuffleSound = new Audio("./sounds/card_shuffle.m4a");
+  cardUpSound = new Audio("./sounds/card_up.mp3");
+  cardDownSound = new Audio("./sounds/card_down.mp3");
+  cardDrawSound = new Audio("./sounds/card_draw.mp3");
+
+  shuffleSound.volume = 0.5;
+  cardUpSound.volume = 0.5;
+  cardDownSound.volume = 0.4;
+  cardDrawSound.volume = 1;
+  shuffleSound.load();
+  cardUpSound.load();
+  cardDownSound.load();
+  cardDrawSound.load();
+}
+
+// ============================================================================
+// 🛠️ SETUP FUNCTION
+// ============================================================================
+
+// Function to create elements and set user/default options
+function setup() {
+  audioSetup();
+  createBackDesignPicker();
+  createColorPicker();
+  createBackgroundPicker();
+  shuffleDeck();
+  setCardGlow("white");
+  const colorOption = document.querySelector('[data-color="white"]');
+  colorOption.classList.add("selected");
+  setBackground("default");
+  const bgOption = document.querySelector('[data-bg="default"]');
+  bgOption.classList.add("selected");
+  setBackDesign("design_1");
+  const backOption = document.querySelector('[data-back="design_1"]');
+  backOption.classList.add("selected");
+}
+
+// ============================================================================
 // 🎯 EVENT LISTENERS
-// ==================================================
+// ============================================================================
 
 // Event listener for shuffle button click
 const shuffleButton = document.querySelector(".shuffle-button");
@@ -325,25 +394,11 @@ statsToggle.addEventListener("change", () => {
 });
 
 // Event listener when the mouse moves. Works only when an active card is clicked
-document.addEventListener("pointermove", e => {
-  if (!isDragging || !activeCard) return;
-  currentX = e.clientX - startX;
-  currentY = e.clientY - startY;
-  activeCard.style.transform = `translate(${currentX}px, ${currentY}px)`;
-});
+document.addEventListener("pointermove", onMove);
+document.addEventListener("touchmove", onMove, { passive: false });
 
 // Event listener when the mouse click ends
-document.addEventListener("pointerup", () => {
-  if (activeCard) {
-    // Play card down sound effect
-    cardDownSound.currentTime = 0;
-    cardDownSound.play();
-
-    activeCard.style.cursor = "pointer";
-    isDragging = false;
-    activeCard = null;
-  }
-});
+document.addEventListener("pointerup", onUp);
 
 // Event listener to wait for dom to load to start setup
 document.addEventListener("DOMContentLoaded", () => {

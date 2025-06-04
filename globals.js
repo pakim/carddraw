@@ -54,6 +54,12 @@ const cardList = [
 ];
 
 const glowPresets = {
+  white: [
+    "rgba(255, 255, 255, 0.75)",
+    "rgba(245, 245, 245, 0.5)",
+    "rgba(230, 230, 230, 0.35)",
+    "rgba(210, 210, 210, 0.25)",
+  ],
   blue: [
     "rgba(100, 200, 255, 0.6)",
     "rgba(80, 180, 255, 0.5)",
@@ -84,51 +90,45 @@ const glowPresets = {
     "rgba(40, 215, 60, 0.4)",
     "rgba(20, 195, 40, 0.3)",
   ],
-  white: [
-    "rgba(255, 255, 255, 0.75)",
-    "rgba(245, 245, 245, 0.5)",
-    "rgba(230, 230, 230, 0.35)",
-    "rgba(210, 210, 210, 0.25)",
-  ],
 };
 
 const backgrounds = {
   default: {
-    type: "gradient",
     value: `linear-gradient(rgba(53, 101, 77, 0.9), rgba(53, 101, 77, 0.9)),
             url("./images/default.jpg")`,
   },
   green_1: {
-    type: "image",
     value: 'url("./images/background_green_1.jpg")',
   },
   green_2: {
-    type: "image",
     value: 'url("./images/background_green_2.jpg")',
   },
   green_3: {
-    type: "image",
     value: 'url("./images/background_green_3.jpg")',
   },
   blue_1: {
-    type: "image",
     value: 'url("./images/background_blue_1.jpg")',
   },
   blue_2: {
-    type: "image",
     value: 'url("./images/background_blue_2.jpg")',
   },
   purple_1: {
-    type: "image",
     value: 'url("./images/background_purple_1.jpg")',
   },
   red_1: {
-    type: "image",
     value: 'url("./images/background_red_1.jpg")',
   },
   red_2: {
-    type: "image",
     value: 'url("./images/background_red_2.jpg")',
+  },
+};
+
+const cardBackDesigns = {
+  design_1: {
+    value: 'url("./svg/1B.svg")',
+  },
+  design_2: {
+    value: 'url("./svg/2B.svg")',
   },
 };
 
@@ -155,3 +155,21 @@ const deckTemplate = {
   joker: 0,
   total: 52,
 };
+
+let jokerEnabled = false;
+let deckNumberCount = {};
+
+// Variables for card dragging
+let isDragging = false;
+let startX = 0,
+  startY = 0;
+let currentX = 0,
+  currentY = 0;
+let activeCard = null;
+let topzIndex = 1;
+
+// Sound effect variables
+let shuffleSound = null;
+let cardUpSound = null;
+let cardDownSound = null;
+let cardDrawSound = null;
