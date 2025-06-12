@@ -43,7 +43,9 @@ function createCardElements(deck = cardList) {
     });
   });
 
-  // Randomly select card, create card element, and add card to the deck
+  // Randomly select card, create card element, and add card to the deck.
+  // Uses the random function to select a card from the deck. Card is removed
+  // and repeat until all the cards are randomly picked.
   for (let i = 0; deck.length > 0; ) {
     // Use random function to select from card list
     index = Math.floor(Math.random() * deck.length);
@@ -86,10 +88,15 @@ function createColorPicker() {
     option.style.setProperty("--color", colorShades[0]);
     option.title = colorName;
 
+    // Event listener to highlight the selected color option and change the highlight
     option.addEventListener("click", () => {
       document.querySelectorAll(".color-option").forEach(o => o.classList.remove("selected"));
       option.classList.add("selected");
       setCardGlow(colorName);
+
+      // Save color to local storage
+      userSettings.highlightColor = colorName;
+      saveSettings();
     });
 
     glowContainer.appendChild(option);
@@ -116,6 +123,10 @@ function createBackgroundPicker() {
       document.querySelectorAll(".bg-option").forEach(o => o.classList.remove("selected"));
       option.classList.add("selected");
       setBackground(key);
+
+      // Save background to local storage
+      userSettings.background = key;
+      saveSettings();
     });
 
     bgContainer.appendChild(option);
@@ -142,6 +153,10 @@ function createBackDesignPicker() {
       document.querySelectorAll(".back-option").forEach(o => o.classList.remove("selected"));
       option.classList.add("selected");
       setBackDesign(key);
+
+      // Save back design to local storage
+      userSettings.cardBack = key;
+      saveSettings();
     });
 
     backContainer.appendChild(option);
@@ -318,6 +333,7 @@ function adjustDeckNumbers(card) {
   deckNumberCount["total"]--;
 }
 
+// Function to load audio and set volume.
 function audioSetup() {
   shuffleSound = new Audio("./sounds/card_shuffle.m4a");
   cardUpSound = new Audio("./sounds/card_up.mp3");
@@ -334,6 +350,46 @@ function audioSetup() {
   cardDrawSound.load();
 }
 
+// Function to save user settings to local storage
+function saveSettings() {
+  localStorage.setItem('cardSettings', JSON.stringify(userSettings));
+}
+
+// Function to load user settings from local storage
+function loadSettings() {
+  const storedSettings = localStorage.getItem('cardSettings');
+  if (storedSettings) {
+    try {
+      const parsed = JSON.parse(storedSettings);
+
+      // Merge stored settings with defaults
+      userSettings = { ...defaultSettings, ...parsed };
+    } catch (e) {
+      console.error('Failed to parse settings:', e);
+    }
+  } else {
+    saveSettings();
+  }
+}
+
+// Function to apply setting options based user settings from local storage.
+function applySettings() {
+  document.querySelector(".toggle-joker").checked = userSettings.jokersEnabled;
+  document.querySelector(".toggle-stats").checked = userSettings.showProbabilities;
+  if(userSettings.showProbabilities) {
+    document.querySelector(".stats-container").classList.remove("hidden");
+  }
+  setBackDesign(userSettings.cardBack);
+  const backOption = document.querySelector(`[data-back=${userSettings.cardBack}]`);
+  backOption.classList.add("selected");
+  setCardGlow(userSettings.highlightColor);
+  const colorOption = document.querySelector(`[data-color=${userSettings.highlightColor}]`);
+  colorOption.classList.add("selected");
+  setBackground(userSettings.background);
+  const bgOption = document.querySelector(`[data-bg=${userSettings.background}]`);
+  bgOption.classList.add("selected");
+}
+
 // ============================================================================
 // 🛠️ SETUP FUNCTION
 // ============================================================================
@@ -344,16 +400,9 @@ function setup() {
   createBackDesignPicker();
   createColorPicker();
   createBackgroundPicker();
+  loadSettings();
+  applySettings();
   shuffleDeck();
-  setCardGlow("white");
-  const colorOption = document.querySelector('[data-color="white"]');
-  colorOption.classList.add("selected");
-  setBackground("default");
-  const bgOption = document.querySelector('[data-bg="default"]');
-  bgOption.classList.add("selected");
-  setBackDesign("design_1");
-  const backOption = document.querySelector('[data-back="design_1"]');
-  backOption.classList.add("selected");
 }
 
 // ============================================================================
@@ -381,16 +430,22 @@ const jokerToggle = document.querySelector(".toggle-joker");
 jokerToggle.addEventListener("change", () => {
   if (jokerToggle.checked) {
     jokerEnabled = true;
+    userSettings.jokersEnabled = true;
   } else {
     jokerEnabled = false;
+    userSettings.jokersEnabled = false;
   }
+  saveSettings();
   shuffleDeck();
 });
 
+// Event listener for probability toggle in settings
 const statsToggle = document.querySelector(".toggle-stats");
 const statsContainer = document.querySelector(".stats-container");
 statsToggle.addEventListener("change", () => {
   statsContainer.classList.toggle("hidden");
+  userSettings.showProbabilities = !userSettings.showProbabilities;
+  saveSettings();
 });
 
 // Event listener when the mouse moves. Works only when an active card is clicked

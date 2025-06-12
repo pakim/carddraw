@@ -1,3 +1,4 @@
+// List of cards corresponding to the svg image.
 const cardList = [
   "2C",
   "2D",
@@ -53,6 +54,7 @@ const cardList = [
   "AS",
 ];
 
+// Glow/highlight colors. Options are dynamically added so colors can be added/removed here.
 const glowPresets = {
   white: [
     "rgba(255, 255, 255, 0.75)",
@@ -92,6 +94,7 @@ const glowPresets = {
   ],
 };
 
+// Background image options. Options are dynamically added so backgrounds can be added/removed here.
 const backgrounds = {
   default: {
     value: `linear-gradient(rgba(53, 101, 77, 0.9), rgba(53, 101, 77, 0.9)),
@@ -123,6 +126,7 @@ const backgrounds = {
   },
 };
 
+// Back design options. Options are dynamically added so back designs can be added/removed here.
 const cardBackDesigns = {
   design_1: {
     value: 'url("./svg/1B.svg")',
@@ -132,6 +136,7 @@ const cardBackDesigns = {
   },
 };
 
+// Template for the number of each type of card.
 const deckTemplate = {
   2: 4,
   3: 4,
@@ -173,3 +178,14 @@ let shuffleSound = null;
 let cardUpSound = null;
 let cardDownSound = null;
 let cardDrawSound = null;
+
+// Local storage variables
+const defaultSettings = {
+  jokersEnabled: false,
+  showProbabilities: false,
+  cardBack: 'design_1',
+  highlightColor: 'white',
+  background: 'default'
+};
+
+let userSettings = { ...defaultSettings };

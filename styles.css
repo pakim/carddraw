@@ -260,13 +260,14 @@ body {
 }
 
 .color-option {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background-color: var(--color);
-  border: 3px transparent;
+  border: 3px solid transparent;
   cursor: pointer;
   transition: border 0.2s ease, transform 0.2s ease;
+  box-sizing: content-box;
 }
 
 .color-option:hover {
@@ -289,15 +290,16 @@ body {
 }
 
 .bg-option {
-  width: 60px;
-  height: 40px;
+  width: 54px;
+  height: 34px;
   border-radius: 6px;
-  border: 3px transparent;
+  border: 3px solid transparent;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
   transition: border 0.2s ease, transform 0.2s ease;
+  box-sizing: content-box;
 }
 
 .bg-option:hover {
@@ -320,15 +322,16 @@ body {
 }
 
 .back-option {
-  width: 43px;
-  height: 60px;
+  width: 37px;
+  height: 54px;
   border-radius: 6px;
-  border: 3px transparent;
+  border: 3px solid transparent;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
   transition: border 0.2s ease, transform 0.2s ease;
+  box-sizing: content-box;
 }
 
 .back-option:hover {
@@ -406,7 +409,7 @@ body {
   height: var(--cardHeight);
   border-radius: 10px;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #000;
   z-index: 2000;
   pointer-events: none;
 }
