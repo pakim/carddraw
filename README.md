@@ -33,8 +33,7 @@ Current functionality:
 - ✅ Allow user to change card back image (limited)
 - ✅ Probability/statistics display
 - ✅ Use local storage to save setting options
-- ⬜ Advanced card flipping animations (if possible)
-- ⬜ Add responsiveness
+- ✅ Add responsiveness
 
 ## 🖼️ Preview
 
